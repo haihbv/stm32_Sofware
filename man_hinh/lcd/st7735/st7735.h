@@ -15,6 +15,7 @@ extern "C"
 
 #include "spi.h"
 #include "gpio.h"
+#include "fonts.h"
 
 /*
    ST7735   ->  STM32F103 (SPI1)
@@ -29,8 +30,8 @@ extern "C"
    BL       ->  3.3V / PA1  // Den nen
 */
 
-static const int16_t ST7735_WIDTH  = 128;
-static const int16_t ST7735_HEIGHT = 160;
+static int16_t ST7735_WIDTH  = 128;
+static int16_t ST7735_HEIGHT = 160;
 
 /*********************************************************************
  * Defines
@@ -92,18 +93,18 @@ static const uint8_t u8PanelCmdList[] = {
 /*********************************************************************
  * RGB Color
  **********************************************************************/
-#define COLOR_BLACK     0x0000
-#define COLOR_WHITE     0xFFFF
-#define COLOR_RED       0xF800
-#define COLOR_GREEN     0x07E0
-#define COLOR_BLUE      0x001F
-#define COLOR_YELLOW    0xFFE0
-#define COLOR_CYAN      0x07FF
-#define COLOR_MAGENTA   0xF81F
-#define COLOR_ORANGE    0xFD20
-#define COLOR_PINK      0xF81F
-#define COLOR_PURPLE    0x780F
-#define COLOR_GRAY      0x8410
+#define RGB_565(red, green, blue) (((red & 0xF8) << 8) | ((green & 0xFC) << 3) | ((blue & 0xF8) >> 3))
+#define BLACK     0x0000  
+#define WHITE     0xFFFF  
+#define BLUE      0xF800  
+#define GREEN     0x07E0  
+#define RED       0x001F  
+#define YELLOW    0x07FF  
+#define CYAN    	0xFFE0  
+#define MAGENTA   0xF81F  
+#define PINK      0xFC9F  
+#define PURPLE    0x780F  
+#define GRAY      0x8410  
 
 /*********************************************************************
  * API Prototype
@@ -112,7 +113,16 @@ void st7735_SendCmd(uint8_t Cmd);
 void st7735_SendData(uint8_t Data);
 void st7735_SendCmdList(const uint8_t *CmdList);
 void st7735_SetWindow(uint8_t x_start, uint8_t y_start, uint8_t x_end, uint8_t y_end);
-void st7735_FillDisplay(uint16_t color);
+void st7735_FillScreen(uint16_t color);
+void st7735_FillScreen_Fast(uint16_t color);
+void st7735_DrawPixel(uint8_t x, uint8_t y, uint16_t color);
+void st7735_PutChar(uint8_t x, uint8_t y, uint8_t kitu, Font_Define_t f, uint16_t color, uint16_t background);
+void st7735_PutString(uint8_t x, uint8_t y, const char *str, Font_Define_t f, uint16_t color, uint16_t background);
+void st7735_FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color);
+void st7735_FillCircle(uint8_t x0, uint8_t y0, uint8_t r, uint16_t color);
+void st7735_InvertColors(_Bool Invert);
+void st7735_Direction(uint8_t direction);
+void st7735_BitMap(uint8_t x, uint8_t y, uint8_t w, uint8_t h, const uint16_t *data);
 void st7735_Init(void);
 
 #ifdef __cplusplus
